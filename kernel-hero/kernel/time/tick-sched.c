@@ -399,6 +399,7 @@ void tick_nohz_restart_sched_tick(void)
 	tick_do_update_jiffies64(now);
 	cpu_clear(cpu, nohz_cpu_mask);
 
+
 	/*
 	 * We stopped the tick in idle. Update process times would miss the
 	 * time we slept as update_process_times does only a 1 tick
@@ -409,10 +410,7 @@ void tick_nohz_restart_sched_tick(void)
 	 * We might be one off. Do not randomly account a huge number of ticks!
 	 */
 	if (ticks && ticks < LONG_MAX) {
-		add_preempt_count(HARDIRQ_OFFSET);
-		account_system_time(current, HARDIRQ_OFFSET,
-				    jiffies_to_cputime(ticks));
-		sub_preempt_count(HARDIRQ_OFFSET);
+                   account_idle_ticks(ticks);
 	}
 
 	touch_softlockup_watchdog();

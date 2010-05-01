@@ -949,20 +949,21 @@ unsigned long get_next_timer_interrupt(unsigned long now)
 }
 #endif
 
+/*REMOVED FOR BFS
 #ifndef CONFIG_VIRT_CPU_ACCOUNTING
-void account_process_tick(struct task_struct *p, int user_tick)
-{
-	cputime_t one_jiffy = jiffies_to_cputime(1);
+//void account_process_tick(struct task_struct *p, int user_tick)
+//{
+//	cputime_t one_jiffy = jiffies_to_cputime(1);
 
 	if (user_tick) {
-		account_user_time(p, one_jiffy);
+//		 account_user_time(p, one_jiffy);
 		account_user_time_scaled(p, cputime_to_scaled(one_jiffy));
 	} else {
-		account_system_time(p, HARDIRQ_OFFSET, one_jiffy);
+//		account_system_time(p, HARDIRQ_OFFSET, one_jiffy);
 		account_system_time_scaled(p, cputime_to_scaled(one_jiffy));
 	}
 }
-#endif
+#endif */
 
 /*
  * Called from the timer interrupt handler to charge one tick to the current
@@ -973,7 +974,7 @@ void update_process_times(int user_tick)
 	struct task_struct *p = current;
 	int cpu = smp_processor_id();
 
-	/* Note: this timer irq context must be accounted for as well. */
+	/* Accounting is done within sched_bfs.c */
 	account_process_tick(p, user_tick);
 	run_local_timers();
 	if (rcu_pending(cpu))
@@ -1025,8 +1026,7 @@ static inline void calc_load(unsigned long ticks)
 
 /*
  * This function runs timers and the timer-tq in bottom half context.
- */
-static void run_timer_softirq(struct softirq_action *h)
+ */run_timer_softirq(struct softirq_action *h)
 {
 	struct tvec_base *base = __get_cpu_var(tvec_bases);
 
